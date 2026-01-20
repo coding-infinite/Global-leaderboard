@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Leaderboard API Documentation | Coding Infinite</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global Leaderboard API – Docs & Demo Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
 body{
@@ -15,221 +15,207 @@ body{
   color:#e5e7eb;
 }
 header{
-  padding:40px;
+  padding:45px;
   text-align:center;
   background:linear-gradient(90deg,#2563eb,#9333ea);
 }
 header h1{margin:0;font-size:34px}
+header p{opacity:.9}
+
 section{
-  max-width:1000px;
+  max-width:1100px;
   margin:auto;
   padding:30px;
 }
 .card{
   background:#111827;
-  padding:26px;
-  border-radius:16px;
-  margin-bottom:26px;
-  box-shadow:0 15px 35px rgba(0,0,0,.45);
+  padding:28px;
+  border-radius:18px;
+  margin-bottom:30px;
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
 }
-h2{
-  color:#38bdf8;
-  margin-top:0;
-}
+h2{color:#38bdf8;margin-top:0}
 pre{
   background:#020617;
   padding:16px;
   border-radius:12px;
   overflow:auto;
-  font-family:'JetBrains Mono', monospace;
 }
 code{color:#22d3ee}
-ul li{margin:8px 0}
+ul li{margin:10px 0}
+
+input,button{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+  margin-top:12px;
+}
+input{
+  background:#020617;
+  color:white;
+}
+button{
+  background:#22c55e;
+  font-weight:600;
+  cursor:pointer;
+}
+button:hover{opacity:.9}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th,td{
+  padding:12px;
+  text-align:left;
+}
+th{background:#1e293b}
+tr:nth-child(even){background:#020617}
+
 footer{
   text-align:center;
   padding:35px;
   opacity:.8;
 }
-a{
-  color:#60a5fa;
-  text-decoration:none;
-}
+a{color:#60a5fa;text-decoration:none}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🌍 Leaderboard API – Easy Documentation</h1>
-  <p>Beginner Friendly • Simple Programming • Copy-Paste Ready</p>
-  <p>Made by <b>Coding Infinite</b></p>
+  <h1>🌍 Global Leaderboard API</h1>
+  <p>Easy Docs • Fun Demo Game • Beginner Friendly</p>
+  <p>By <b>Coding Infinite</b></p>
 </header>
 
 <section>
 
+<!-- INTRO -->
 <div class="card">
-<h2>1️⃣ What does this API do?</h2>
+<h2>1️⃣ What is this API?</h2>
 <p>
-This API helps you create a <b>global leaderboard</b> for games.
+This API helps you create a <b>global leaderboard</b> for any game.
 </p>
 <ul>
-<li>Stores <b>username</b></li>
-<li>Stores <b>score</b></li>
-<li>Stores <b>country + emoji</b> together</li>
-<li>If same username comes again → <b>only max score is saved</b></li>
+<li>Stores username</li>
+<li>Stores maximum score only</li>
+<li>Stores country + emoji</li>
+<li>Returns sorted leaderboard</li>
+<li>No login / no API key</li>
 </ul>
 </div>
 
+<!-- BASE URL -->
 <div class="card">
-<h2>2️⃣ Main Features</h2>
-<ul>
-<li>Very easy to use</li>
-<li>No login or authentication</li>
-<li>Works with website & mobile apps</li>
-<li>Frontend controls country & emoji</li>
-<li>Free & lightweight</li>
-</ul>
+<h2>2️⃣ API Base URL</h2>
+<pre><code>https://global-leaderboard.onrender.com</code></pre>
 </div>
 
+<!-- GAME -->
 <div class="card">
-<h2>3️⃣ API Base URL</h2>
-<p>Use your deployed Render URL:</p>
-<pre><code>https://YOUR-APP.onrender.com</code></pre>
-</div>
-
-<div class="card">
-<h2>4️⃣ Which Country API should I use?</h2>
+<h2>3️⃣ Demo Game – Click Challenge 🎮</h2>
 <p>
-Use this <b>free API</b> to get user country:
+Click anywhere on screen for <b>5 seconds</b>.  
+Your total clicks = your score.
 </p>
-<pre><code>https://ipapi.co/json/</code></pre>
-<p>
-No API key required. Works globally.
-</p>
+
+<input id="username" placeholder="Enter your username">
+<button onclick="startGame()">Start Game</button>
+
+<p id="gameStatus"></p>
 </div>
 
+<!-- LEADERBOARD -->
 <div class="card">
-<h2>5️⃣ How to get Country + Emoji?</h2>
-<pre><code>
-async function getCountryWithEmoji(){
-  const res = await fetch("https://ipapi.co/json/");
-  const data = await res.json();
+<h2>🏆 Live Leaderboard</h2>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Player</th>
+<th>Country</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody id="leaderboard"></tbody>
+</table>
+</div>
 
-  const emoji = data.country_code
-    .toUpperCase()
-    .replace(/./g, c =>
-      String.fromCodePoint(127397 + c.charCodeAt())
-    );
-
-  return data.country_name + " " + emoji;
-}
-</code></pre>
+<!-- REGISTER DOC -->
+<div class="card">
+<h2>4️⃣ Register Player / Send Score</h2>
 
 <p>
-Example result:
+<b>Endpoint:</b>
 </p>
-<pre><code>India 🇮🇳</code></pre>
-</div>
-
-<div class="card">
-<h2>6️⃣ How to Register Player / Send Score?</h2>
-
-<h3>📤 API Endpoint</h3>
 <pre><code>POST /register</code></pre>
 
-<h3>📦 Data to send</h3>
-<ul>
-<li>username</li>
-<li>score</li>
-<li>country (with emoji)</li>
-</ul>
+<p>
+<b>Data you must send:</b>
+</p>
 
-<h3>🧠 Simple JavaScript Example</h3>
 <pre><code>
-async function registerPlayer(username, score){
-  const country = await getCountryWithEmoji();
-
-  fetch(API + "/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: username,
-      score: score,
-      country: country
-    })
-  });
+{
+  "username": "Alex",
+  "score": 120,
+  "country": "India",
+  "emoji": "🇮🇳"
 }
 </code></pre>
 
 <p>
-✔ Same username + higher score → updated  
-<br>
-✔ Same username + lower score → ignored
+<b>Rule:</b> Same username → only maximum score saved.
 </p>
 </div>
 
+<!-- COUNTRY -->
 <div class="card">
-<h2>7️⃣ How to Get Leaderboard Data?</h2>
+<h2>5️⃣ How Country & Emoji Works</h2>
+<p>
+Country is detected in <b>frontend</b> using free IP API.
+</p>
 
-<h3>📥 API Endpoint</h3>
-<pre><code>GET /leaderboard</code></pre>
-
-<h3>🧠 JavaScript Example</h3>
 <pre><code>
-fetch(API + "/leaderboard")
-  .then(res => res.json())
-  .then(data => {
-    console.log(data);
-  });
+https://ipapi.co/json/
 </code></pre>
 
-<h3>📄 Response Format</h3>
+<p>
+Emoji is generated from country code.
+</p>
+</div>
+
+<!-- GET -->
+<div class="card">
+<h2>6️⃣ Get Leaderboard Data</h2>
 <pre><code>
-[
-  {
-    "username": "Shiva",
-    "score": 150,
-    "country": "India 🇮🇳"
-  }
-]
+GET /leaderboard
 </code></pre>
+
+<p>
+Returns sorted leaderboard array.
+</p>
 </div>
 
+<!-- USE CASE -->
 <div class="card">
-<h2>8️⃣ How backend works?</h2>
+<h2>7️⃣ Where You Can Use This API</h2>
 <ul>
-<li>Backend checks username</li>
-<li>If username exists → compares score</li>
-<li>Only <b>maximum score</b> is stored</li>
-<li>Country & emoji stored as single string</li>
-</ul>
-</div>
-
-<div class="card">
-<h2>9️⃣ Where can you use this API?</h2>
-<ul>
-<li>HTML / JavaScript games</li>
-<li>React / Vue apps</li>
-<li>Android WebView apps</li>
+<li>HTML / JS Games</li>
+<li>Mobile Apps</li>
+<li>React / Vue</li>
 <li>College projects</li>
-<li>Learning & practice</li>
+<li>Practice APIs</li>
 </ul>
 </div>
 
+<!-- YT -->
 <div class="card">
-<h2>🔟 Backend Files</h2>
-<ul>
-<li><b>server.js</b> → API logic</li>
-<li><b>package.json</b> → dependencies</li>
-<li><b>data.json</b> → leaderboard data</li>
-</ul>
-</div>
-
-<div class="card">
-<h2>📺 Learn More</h2>
-<p>YouTube Channel:</p>
+<h2>8️⃣ Learn More</h2>
+<p>📺 YouTube Channel:</p>
 <a href="https://youtube.com/@codinginfinite" target="_blank">
 👉 https://youtube.com/@codinginfinite
 </a>
@@ -241,5 +227,90 @@ fetch(API + "/leaderboard")
 Made with ❤️ by Coding Infinite
 </footer>
 
+<script>
+const API = "https://global-leaderboard.onrender.com";
+
+let clicks = 0;
+let playing = false;
+
+// Detect country & emoji
+async function getCountryInfo(){
+  const res = await fetch("https://ipapi.co/json/");
+  const data = await res.json();
+
+  const country = data.country_name || "Unknown";
+  const code = data.country_code || "";
+
+  const emoji = code
+    ? code.toUpperCase().replace(/./g, c =>
+        String.fromCodePoint(127397 + c.charCodeAt())
+      )
+    : "🌍";
+
+  return { country, emoji };
+}
+
+async function startGame(){
+  const name = document.getElementById("username").value.trim();
+  if(!name){
+    alert("Enter username");
+    return;
+  }
+
+  clicks = 0;
+  playing = true;
+  document.getElementById("gameStatus").innerText =
+    "Game started! Click anywhere for 5 seconds";
+
+  document.body.onclick = () => {
+    if(playing) clicks++;
+  };
+
+  setTimeout(async () => {
+    playing = false;
+    document.body.onclick = null;
+
+    const info = await getCountryInfo();
+
+    await fetch(API + "/register", {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({
+        username: name,
+        score: clicks,
+        country: info.country,
+        emoji: info.emoji
+      })
+    });
+
+    document.getElementById("gameStatus").innerText =
+      "Game Over! Your score: " + clicks;
+
+    loadLeaderboard();
+  }, 5000);
+}
+
+async function loadLeaderboard(){
+  const res = await fetch(API + "/leaderboard");
+  const data = await res.json();
+
+  const tbody = document.getElementById("leaderboard");
+  tbody.innerHTML = "";
+
+  data.forEach((p,i)=>{
+    tbody.innerHTML += `
+      <tr>
+        <td>#${i+1}</td>
+        <td>${p.emoji} ${p.username}</td>
+        <td>${p.country}</td>
+        <td>${p.score}</td>
+      </tr>
+    `;
+  });
+}
+
+loadLeaderboard();
+</script>
+
 </body>
-  </html>
+</html>
